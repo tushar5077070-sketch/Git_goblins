@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body, #root, #crystal-app-root {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    min-width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+    background-color: #020617;
+    color: #f8fafc;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* Fullscreen container locks to eliminate black borders */
+  :fullscreen,
+  ::backdrop,
+  *:fullscreen {
+    background-color: #020617 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  :fullscreen #root,
+  :fullscreen #crystal-app-root {
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    inset: 0 !important;
+  }
+
+  /* Custom scrollbar for game modals */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f172a;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #06b6d4;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

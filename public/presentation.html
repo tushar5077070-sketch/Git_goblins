@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Crystal Village - Complete Multi-Subject Presentation Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --cyan: #06b6d4;
+      --cyan-bright: #38bdf8;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 14px 20px;
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+    }
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #1f2937;
+      color: #e2e8f0;
+      border: 1px solid #374151;
+    }
+    .btn-secondary:hover {
+      background: #374151;
+    }
+
+    .slides-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .slide-card {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 38px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      page-break-after: always;
+    }
+    .slide-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cyan), var(--amber), var(--purple));
+    }
+    .slide-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .slide-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .slide-counter {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .slide-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--cyan-bright);
+      font-weight: 400;
+      margin-bottom: 18px;
+    }
+    .slide-body {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(51, 65, 85, 0.4);
+      border-left: 4px solid var(--cyan);
+      border-radius: 12px;
+      padding: 20px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .bullet-icon {
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 2px;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .notes-box {
+      margin-top: 14px;
+      padding: 10px 16px;
+      background: rgba(10, 15, 30, 0.9);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+    .notes-title {
+      font-weight: 700;
+      color: var(--amber);
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      header {
+        display: none !important;
+      }
+      .slide-card {
+        page-break-after: always;
+        break-after: page;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        background: #0f172a !important;
+        color: #fff !important;
+        aspect-ratio: 16 / 9;
+        height: 100vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <span class="badge">Comprehensive Deck</span>
+      <h2 style="font-size: 18px; font-weight: 700;">The Crystal Village: Python, Web Dev & Git</h2>
+    </div>
+    <div class="btn-group">
+      <a href="/The_Crystal_Village_Presentation.pdf" download="The_Crystal_Village_Presentation.pdf" class="btn btn-primary">
+        📥 Download Updated PDF
+      </a>
+      <button onclick="window.print()" class="btn btn-secondary">
+        🖨️ Print / Save to PDF
+      </button>
+    </div>
+  </header>
+
+  <div class="slides-wrapper">
+    <!-- Slide 1 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag">VISION & OVERVIEW</span>
+          <span class="slide-counter">Slide 1 of 10</span>
+        </div>
+        <h1 class="slide-title">The Crystal Village: Educational Coding Adventure</h1>
+        <p class="slide-subtitle">Mastering Python, Web Development, and Git & GitHub Through Narrative Gaming</p>
+      </div>
+      <div class="slide-body">
+        <div class="bullet-item"><div class="bullet-icon"></div><div>A gamified learning universe transforming computer science education from passive reading into active exploration.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Comprehensive Tri-Track Curriculum: Full foundational mastery across Python, Web Development, and Git & GitHub.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Peaceful Mentor System: District Masters deliver interactive video lessons and dynamic visual architectural simulations.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Knowledge-Based Monster Duels: Players banish Glitch Fiends by answering scenario-based programming challenges.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Full-featured RPG Mechanics: Custom character studio, in-game Codex, exploration shards, and an infinite Trials Arena.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Welcome everyone. The Crystal Village bridges the gap between theoretical syntax and applied engineering intuition across three core pillars of modern computing: Python, Web Development, and Git version control.
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag">PEDAGOGICAL CHALLENGE</span>
+          <span class="slide-counter">Slide 2 of 10</span>
+        </div>
+        <h1 class="slide-title">The Problem in Computer Science Education</h1>
+        <p class="slide-subtitle">Why Traditional Tutorials and Rote Syntax Drills Lead to Dropouts</p>
+      </div>
+      <div class="slide-body">
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Syntax Fatigue: Beginners drown in language rules without understanding how code executes or connects to real projects.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>The Isolated Silo Trap: Teaching languages in isolation ignores how Python backends, Web frontends, and Git workflows coalesce.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Fear of Breaking Things: Students develop acute anxiety around terminal errors, broken CSS layouts, and Git merge conflicts.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Low Retention Rates: Non-interactive video tutorials and text documentation yield under 20% knowledge retention after one week.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Our Mission: Replace intimidation with gamified psychological safety, where bugs are monsters to conquer and concepts are magic spells.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Beginners don't struggle because code is inherently impossible; they struggle because traditional education isolates concepts and punishes failure. We turn debugging and conceptual hurdles into rewarding gameplay victories.
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag">CURRICULUM OVERVIEW</span>
+          <span class="slide-counter">Slide 3 of 10</span>
+        </div>
+        <h1 class="slide-title">The Tri-Track Curriculum Architecture</h1>
+        <p class="slide-subtitle">Three Interconnected Realms of Modern Software Engineering</p>
+      </div>
+      <div class="slide-body">
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Track 1 - Python (The Serpent Spires): From dynamic typing and flow control to data structures and Object-Oriented Programming.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Track 2 - Web Development (The World Wide Archipelago): Semantic HTML5 architecture, modern CSS3 Flexbox/Grid, and interactive JavaScript DOM.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Track 3 - Git & GitHub (The Repository Spires): Three Trees mental model, branch isolation, remote synchronization, and conflict resolution.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Cross-Disciplinary Synergy: Students understand how frontends communicate with Python scripts, all versioned cleanly in Git repositories.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Selectable at Will: Players can freely switch between subjects at the Academy Hub while tracking independent subject progress.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Rather than treating Python, Web, and Git as three separate classes, The Crystal Village presents them as three realms of one grand digital world. A developer needs all three to be career-ready.
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag" style="color: var(--amber);">CURRICULUM - PYTHON</span>
+          <span class="slide-counter">Slide 4 of 10</span>
+        </div>
+        <h1 class="slide-title">Curriculum Track 1: Python — The Serpent Spires</h1>
+        <p class="slide-subtitle">Foundational Logic, Algorithmic Thinking, and Object-Oriented Mastery</p>
+      </div>
+      <div class="slide-body" style="border-left-color: var(--amber);">
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--amber);"></div><div>Realm Lore: Guided by Grandmaster Guido, students explore the sun-drenched oasis and algorithmic groves.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--amber);"></div><div>Core Concepts Taught: Variables, dynamic typing, truthiness, conditional branching (if/elif/else), and while/for loops.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--amber);"></div><div>Data Structures & Scope: Python lists, tuples, sets, hash dictionaries, and pure vs. stateful functions.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--amber);"></div><div>Object-Oriented Programming: Class constructors (__init__), instance methods, attributes, and inheritance hierarchies.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--amber);"></div><div>Climactic Boss Encounter: The GIL Leviathan - defeated by chaining modular functions and efficient data handling.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        In the Python track, students build algorithmic confidence. They learn not just how to write a loop, but how to choose the right data structure and write clean, readable Pythonic code.
+      </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag" style="color: var(--cyan-bright);">CURRICULUM - WEB DEV</span>
+          <span class="slide-counter">Slide 5 of 10</span>
+        </div>
+        <h1 class="slide-title">Curriculum Track 2: Web Development — Frontend Bastion</h1>
+        <p class="slide-subtitle">Semantic HTML5, Responsive CSS Layouts, and JavaScript Interactivity</p>
+      </div>
+      <div class="slide-body" style="border-left-color: var(--cyan-bright);">
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan-bright);"></div><div>Realm Lore: Guided by Grandmaster Tim & Cascade across the digital islands of the World Wide Archipelago.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan-bright);"></div><div>Semantic HTML5 & Accessibility: Document outlining, landmark tags (main, nav, article), forms, and ARIA accessibility standards.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan-bright);"></div><div>CSS3 Layouts & Responsive Design: The Box Model, Flexbox alignment, CSS Grid tracks, media queries, and fluid typography.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan-bright);"></div><div>Modern JavaScript DOM: Event bubbling, listeners, DOM tree manipulation, Promises, and asynchronous Fetch API calls.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan-bright);"></div><div>Climactic Boss Encounter: The Hydration Chimera - banished by synchronizing markup structure with dynamic JavaScript logic.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        The Web Development track gives learners immediate visual gratification. They learn how semantic HTML forms the skeleton, CSS provides the visual style, and JavaScript breathes life into the user interface.
+      </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag" style="color: var(--cyan);">CURRICULUM - GIT & GITHUB</span>
+          <span class="slide-counter">Slide 6 of 10</span>
+        </div>
+        <h1 class="slide-title">Curriculum Track 3: Git & GitHub — Repository Spires</h1>
+        <p class="slide-subtitle">Version Control, Branch Pointers, Remotes, and Conflict Resolution</p>
+      </div>
+      <div class="slide-body" style="border-left-color: var(--cyan);">
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan);"></div><div>Realm Lore: Guided by Master Linus & Grandmaster Octocat within the ancient stone courtyards of the Repository Gate.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan);"></div><div>The Three Trees Mental Model: Working Directory vs. Staging Area (git add) vs. Repository Commit Snapshots (git commit).</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan);"></div><div>Branching & The HEAD Pointer: Isolated experimentation, switching branches (git switch -c), and safe pointer manipulation.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan);"></div><div>Remote Collaboration: Cloning, origin tracking, push/pull lifecycles, and diagnosing non-fast-forward push rejections.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--cyan);"></div><div>Merge Conflicts & Safe Time Travel: Resolving collision markers (<<<<<<< HEAD), pull requests, git stash, and non-destructive git revert.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        The Git track dismantles the fear of breaking code. Students visualize commits as an immutable snapshot graph, understanding exactly what occurs during merges, rebases, and remote pushes.
+      </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag">PEDAGOGICAL METHODOLOGY</span>
+          <span class="slide-counter">Slide 7 of 10</span>
+        </div>
+        <h1 class="slide-title">The Dual-Phase Learning Loop</h1>
+        <p class="slide-subtitle">Separating Stress-Free Mentorship from Active-Recall Testing</p>
+      </div>
+      <div class="slide-body">
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Phase 1 - Exploration & Discovery: Walk through rich 2D districts, discovering Lore Stones and Knowledge Shards at player pace.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Phase 2 - Peaceful Mentor Dialogue: Meet District Masters who explain engineering rationale before any test begins.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Phase 3 - Interactive Visual Lessons: Watch animated architecture simulations (commit graphs, DOM trees, memory stacks) with scrubber controls.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Phase 4 - Advance to the Roadblock: Walk forward along the path to confront corrupted Glitch Monsters guarding the gate.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Phase 5 - Knowledge-Based Combat: Cast elemental code spells by correctly diagnosing code snippets; banishing the glitch unlocks the next zone.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Notice how our gameplay loop strictly separates learning from testing. First comes psychological safety and mentorship; only then comes active recall in battle. If a student fails a duel, they can revisit the Master with zero penalty.
+      </div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag" style="color: var(--purple);">GAME SYSTEMS</span>
+          <span class="slide-counter">Slide 8 of 10</span>
+        </div>
+        <h1 class="slide-title">Gamification & Immersion Systems</h1>
+        <p class="slide-subtitle">Deep Player Agency and Engagement Architecture</p>
+      </div>
+      <div class="slide-body" style="border-left-color: var(--purple);">
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--purple);"></div><div>Custom Character Studio: Play as Lyra the Spellblade, Kael the Shadow Coder, Jax the Tech Paladin, or design custom avatars.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--purple);"></div><div>The Living Ancient Codex: An automatic in-game encyclopedia recording all learned commands, syntax tips, and architectural diagrams.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--purple);"></div><div>Exploration Shards & Lore: Hidden knowledge fragments reward curious players who explore off the beaten path.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--purple);"></div><div>Synthesized Retro Audio Engine: Real-time procedural Web Audio API synthesizer generating music, hums, and victory fanfares.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--purple);"></div><div>Multi-Subject Hub: Seamlessly switch between Python, Web Development, and Git tracks with preserved individual level progress.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Gamification succeeds when it serves pedagogy. The Codex acts as a real-world reference manual, while customizable heroes and audio feedback sustain dopamine and intrinsic motivation.
+      </div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag" style="color: var(--emerald);">ASSESSMENT & RETENTION</span>
+          <span class="slide-counter">Slide 9 of 10</span>
+        </div>
+        <h1 class="slide-title">Assessment & The 100-Answer Grand Milestone</h1>
+        <p class="slide-subtitle">Infinite Practice Arena and Cinematic Mastery Celebration</p>
+      </div>
+      <div class="slide-body" style="border-left-color: var(--emerald);">
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--emerald);"></div><div>The Hall of Trials: An infinite randomized practice arena drawing from a multi-disciplinary bank of 60+ programming scenarios.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--emerald);"></div><div>Broad Question Coverage: Edge cases, debugging exercises, syntax parsing, and architectural decision questions.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--emerald);"></div><div>Real-Time Analytics HUD: Live tracking of shards gathered, clues inspected, and total verified correct answers.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--emerald);"></div><div>The 100-Answer Milestone: Reaching 100 correct answers triggers an epic full-screen Grand Cinematic Awakening.</div></div>
+        <div class="bullet-item"><div class="bullet-icon" style="background: var(--emerald);"></div><div>Prestigious Honors: Players are awarded the permanent title: 'Grand Archon of the Crystal Academy'.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        For long-term retention, students need spaced repetition. The Hall of Trials provides endless practice, culminating in a celebration that makes reaching 100 correct answers feel like a monumental gaming triumph.
+      </div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide-card">
+      <div>
+        <div class="slide-top">
+          <span class="slide-tag">ENGINEERING & ROADMAP</span>
+          <span class="slide-counter">Slide 10 of 10</span>
+        </div>
+        <h1 class="slide-title">Technical Architecture & Future Horizons</h1>
+        <p class="slide-subtitle">High-Performance Modern Web Stack with Zero Overhead</p>
+      </div>
+      <div class="slide-body">
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Modern Stack: React 19 + TypeScript + Vite delivering instantaneous UI reactivity and rock-solid type safety.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Custom 2D Canvas Engine: 60 FPS pixel rendering with camera tracking, sprite animations, and particle ambient weather.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Zero Asset Weight: Pure algorithmic Web Audio API synthesizer and Tailwind CSS v4 styling with zero external bundle bloat.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Roadmap Expansion: Adding SQL & Databases Realm, Docker & Containerization Grove, and real-time multiplayer coding duels.</div></div>
+        <div class="bullet-item"><div class="bullet-icon"></div><div>Conclusion: The Crystal Village proves that computer science mastery can be thrilling, intuitive, and deeply empowering.</div></div>
+      </div>
+      <div class="notes-box">
+        <div class="notes-title">Speaker Script</div>
+        Built with React 19 and HTML5 Canvas, the app runs smoothly on any device without plugins or downloads. We're laying the foundation for a complete educational gaming platform across all software disciplines. Thank you!
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
