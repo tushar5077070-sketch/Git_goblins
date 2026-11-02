@@ -15,7 +15,6 @@ import {
   Shield,
   Edit3,
   LogOut,
-  FileText,
   Save,
   Trophy,
   ArrowRight,
@@ -26,7 +25,6 @@ interface ProfileModalProps {
   gameState: GameState;
   onClose: () => void;
   onRefreshChaptersToLevel1: (subjectId?: SubjectId) => void;
-  onOpenPPT: () => void;
   onOpenAchievements: () => void;
   onOpenAuth: () => void;
 }
@@ -35,7 +33,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   gameState,
   onClose,
   onRefreshChaptersToLevel1,
-  onOpenPPT,
   onOpenAchievements,
   onOpenAuth,
 }) => {
@@ -453,37 +450,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
             </div>
           </div>
 
-          {/* Bottom Quick Links: Project PPT & Achievements */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <button
-              onClick={() => {
-                onClose();
-                onOpenPPT();
-              }}
-              className="p-4 rounded-2xl bg-slate-950/80 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-left transition-all cursor-pointer flex items-center justify-between group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-cyan-950/80 text-cyan-400 border border-cyan-500/30">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
-                    View Project Presentation Deck (PPT)
-                  </h5>
-                  <p className="text-[11px] text-slate-400">
-                    Comprehensive 8-slide architecture, pedagogy & roadmap
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-colors flex-shrink-0" />
-            </button>
-
+          {/* Bottom Quick Links: Achievements */}
+          <div className="pt-2">
             <button
               onClick={() => {
                 onClose();
                 onOpenAchievements();
               }}
-              className="p-4 rounded-2xl bg-slate-950/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-left transition-all cursor-pointer flex items-center justify-between group"
+              className="w-full p-4 rounded-2xl bg-slate-950/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-left transition-all cursor-pointer flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-amber-950/80 text-amber-400 border border-amber-500/30">

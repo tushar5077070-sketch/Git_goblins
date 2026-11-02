@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubjectId, Character } from '../types';
 import { SUBJECTS, SubjectInfo } from '../data/subjects';
-import { Sparkles, ArrowRight, User, Volume2, VolumeX, Shield, CheckCircle2, BookOpen, Layers, FileText, User as UserIcon } from 'lucide-react';
+import { Sparkles, ArrowRight, User, Volume2, VolumeX, Shield, CheckCircle2, BookOpen, Layers, User as UserIcon } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { useAuth } from '../context/AuthContext';
 
@@ -21,7 +21,6 @@ interface SubjectSelectProps {
   soundEnabled: boolean;
   onToggleSound: () => void;
   onOpenProfile?: () => void;
-  onOpenPPT?: () => void;
 }
 
 export const SubjectSelect: React.FC<SubjectSelectProps> = ({
@@ -33,7 +32,6 @@ export const SubjectSelect: React.FC<SubjectSelectProps> = ({
   soundEnabled,
   onToggleSound,
   onOpenProfile,
-  onOpenPPT,
 }) => {
   const { user } = useAuth();
 
@@ -70,17 +68,6 @@ export const SubjectSelect: React.FC<SubjectSelectProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {onOpenPPT && (
-            <button
-              onClick={onOpenPPT}
-              title="Open Project Presentation Deck (PPT)"
-              className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-cyan-950 to-indigo-950 border border-cyan-500/40 text-cyan-300 hover:text-white transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer shadow-md"
-            >
-              <FileText className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline">Project PPT</span>
-            </button>
-          )}
-
           {onOpenProfile && (
             <button
               onClick={onOpenProfile}

@@ -12,7 +12,6 @@ import {
   Compass,
   Gem,
   Menu,
-  FileText,
   User as UserIcon,
   RotateCcw,
 } from 'lucide-react';
@@ -32,7 +31,6 @@ interface HUDProps {
   onOpenAchievements: () => void;
   onOpenCodex: () => void;
   onOpenProfile: () => void;
-  onOpenPPT: () => void;
   onRefreshChaptersToLevel1: () => void;
   onSwitchCharacter: () => void;
   onSwitchSubject: () => void;
@@ -52,7 +50,6 @@ export const HUD: React.FC<HUDProps> = ({
   onOpenAchievements,
   onOpenCodex,
   onOpenProfile,
-  onOpenPPT,
   onRefreshChaptersToLevel1,
   onSwitchCharacter,
   onSwitchSubject,
@@ -140,16 +137,6 @@ export const HUD: React.FC<HUDProps> = ({
 
       {/* Top-Right Menu & Navigation Buttons */}
       <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
-        {/* Project PPT Deck Button */}
-        <button
-          onClick={onOpenPPT}
-          title="Open Project Presentation Deck (PPT)"
-          className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-cyan-950/90 to-indigo-950/90 border border-cyan-500/50 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-md flex items-center gap-1.5 cursor-pointer text-xs font-mono font-bold"
-        >
-          <FileText className="w-4 h-4 text-cyan-400" />
-          <span className="hidden xl:inline">Project Slides (PPT)</span>
-        </button>
-
         {/* Profile Button */}
         <button
           onClick={onOpenProfile}

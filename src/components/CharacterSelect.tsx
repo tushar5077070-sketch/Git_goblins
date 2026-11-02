@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { CHARACTERS } from '../data/characters';
 import { Character, CharacterId } from '../types';
-import { Sparkles, Shield, Clock, ArrowRight, Volume2, VolumeX, RotateCcw, Plus, Trash2, Wand2, FileText, User as UserIcon } from 'lucide-react';
+import { Sparkles, Shield, Clock, ArrowRight, Volume2, VolumeX, RotateCcw, Plus, Trash2, Wand2, User as UserIcon } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { CharacterCreatorModal } from './CharacterCreatorModal';
 import { useAuth } from '../context/AuthContext';
@@ -18,7 +18,6 @@ interface CharacterSelectProps {
   onReset: () => void;
   hasExistingSave: boolean;
   onOpenProfile?: () => void;
-  onOpenPPT?: () => void;
   onOpenAuth?: () => void;
 }
 
@@ -34,7 +33,6 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
   onReset,
   hasExistingSave,
   onOpenProfile,
-  onOpenPPT,
   onOpenAuth,
 }) => {
   const [showCreator, setShowCreator] = useState(false);
@@ -69,18 +67,6 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* PPT Presentation Deck Button */}
-          {onOpenPPT && (
-            <button
-              onClick={onOpenPPT}
-              title="Open Project Presentation Deck (PPT)"
-              className="py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-950 to-indigo-950 border border-cyan-500/40 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
-            >
-              <FileText className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline">Project PPT</span>
-            </button>
-          )}
-
           {/* User Profile / Login */}
           {onOpenProfile && (
             <button
