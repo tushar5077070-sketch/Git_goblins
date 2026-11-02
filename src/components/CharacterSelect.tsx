@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { CHARACTERS } from '../data/characters';
 import { Character, CharacterId } from '../types';
-import { Sparkles, Shield, Clock, ArrowRight, Volume2, VolumeX, RotateCcw, Plus, Trash2, Wand2, FileText, Maximize2, Minimize2 } from 'lucide-react';
+import { Sparkles, Shield, Clock, ArrowRight, Volume2, VolumeX, RotateCcw, Plus, Trash2, Wand2, FileText, User as UserIcon } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { CharacterCreatorModal } from './CharacterCreatorModal';
+import { useAuth } from '../context/AuthContext';
 
 interface CharacterSelectProps {
   selectedId: CharacterId | null;
@@ -16,7 +17,9 @@ interface CharacterSelectProps {
   onToggleSound: () => void;
   onReset: () => void;
   hasExistingSave: boolean;
-  onOpenPresentation?: () => void;
+  onOpenProfile?: () => void;
+  onOpenPPT?: () => void;
+  onOpenAuth?: () => void;
 }
 
 export const CharacterSelect: React.FC<CharacterSelectProps> = ({
@@ -30,28 +33,12 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
   onToggleSound,
   onReset,
   hasExistingSave,
-  onOpenPresentation,
+  onOpenProfile,
+  onOpenPPT,
+  onOpenAuth,
 }) => {
   const [showCreator, setShowCreator] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(
-    typeof document !== 'undefined' ? !!document.fullscreenElement : false
-  );
-
-  useEffect(() => {
-    const handleFsChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFsChange);
-    return () => document.removeEventListener('fullscreenchange', handleFsChange);
-  }, []);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  };
+  const { user, isAuthenticated } = useAuth();
 
   // Combine default and custom characters
   const allCharacters = [...CHARACTERS, ...customCharacters];
@@ -64,7 +51,7 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
       <BackgroundAtmosphere />
 
       {/* Top Header / Bar */}
-      <header className="relative z-10 w-full px-6 py-5 flex items-center justify-between border-b border-cyan-900/30 bg-slate-950/70 backdrop-blur-md">
+      <header className="relative z-10 w-full px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between border-b border-cyan-900/30 bg-slate-950/70 backdrop-blur-md gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-600 p-[1px] shadow-lg shadow-cyan-500/20">
             <div className="w-full h-full bg-slate-950 rounded-lg flex items-center justify-center">
@@ -82,28 +69,29 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {onOpenPresentation && (
+          {/* PPT Presentation Deck Button */}
+          {onOpenPPT && (
             <button
-              onClick={onOpenPresentation}
-              title="View Project Presentation & Download PowerPoint (.PPTX)"
-              className="px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-950 to-indigo-950 border border-cyan-500/50 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-md flex items-center gap-2 cursor-pointer text-xs font-mono"
+              onClick={onOpenPPT}
+              title="Open Project Presentation Deck (PPT)"
+              className="py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-950 to-indigo-950 border border-cyan-500/40 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
             >
               <FileText className="w-4 h-4 text-cyan-400" />
-              <span className="hidden sm:inline font-bold">Project PPT Deck</span>
+              <span className="hidden sm:inline">Project PPT</span>
             </button>
           )}
 
-          <button
-            onClick={toggleFullscreen}
-            title={isFullscreen ? 'Exit Full Screen' : 'Switch to Full Screen (Edge-to-Edge)'}
-            className="p-2 rounded-lg bg-slate-900/80 border border-slate-700/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 transition-colors cursor-pointer"
-          >
-            {isFullscreen ? (
-              <Minimize2 className="w-4 h-4 text-cyan-400" />
-            ) : (
-              <Maximize2 className="w-4 h-4" />
-            )}
-          </button>
+          {/* User Profile / Login */}
+          {onOpenProfile && (
+            <button
+              onClick={onOpenProfile}
+              title="Player Profile & Accounts"
+              className="py-2 px-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-500/50 text-cyan-300 hover:text-white transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer"
+            >
+              <UserIcon className="w-4 h-4 text-cyan-400" />
+              <span>{user?.name || (isAuthenticated ? 'Profile' : 'Login / Sign Up')}</span>
+            </button>
+          )}
 
           {hasExistingSave && (
             <button
@@ -115,7 +103,7 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
               title="Reset Saved Game"
               className="p-2 rounded-lg bg-slate-900/80 border border-slate-700/60 text-slate-400 hover:text-red-400 hover:border-red-500/40 transition-colors cursor-pointer"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-5 h-5" />
             </button>
           )}
 
@@ -124,7 +112,7 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
             title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
             className="p-2 rounded-lg bg-slate-900/80 border border-cyan-800/40 text-cyan-300 hover:bg-cyan-950/50 hover:text-cyan-200 transition-colors cursor-pointer"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+            {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5 text-slate-500" />}
           </button>
         </div>
       </header>

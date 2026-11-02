@@ -1,7 +1,7 @@
 import React from 'react';
 import { LevelData, SubjectId } from '../types';
 import { getSubjectLevels } from '../data/subjects';
-import { MapPin, Lock, CheckCircle2, ArrowRight, X, Sparkles } from 'lucide-react';
+import { MapPin, Lock, CheckCircle2, ArrowRight, X, Sparkles, RotateCcw } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 
 interface LevelMapModalProps {
@@ -10,6 +10,7 @@ interface LevelMapModalProps {
   unlockedLevelIds: number[];
   completedLevelIds: number[];
   onSelectLevel: (levelId: number) => void;
+  onRefreshChaptersToLevel1?: () => void;
   onClose: () => void;
 }
 
@@ -19,6 +20,7 @@ export const LevelMapModal: React.FC<LevelMapModalProps> = ({
   unlockedLevelIds,
   completedLevelIds,
   onSelectLevel,
+  onRefreshChaptersToLevel1,
   onClose,
 }) => {
   const levels = getSubjectLevels(subjectId);
@@ -27,7 +29,7 @@ export const LevelMapModal: React.FC<LevelMapModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-slate-950/85 backdrop-blur-xl animate-fadeIn selection:bg-cyan-500 selection:text-black">
       <div className="relative max-w-4xl w-full bg-slate-900 border border-cyan-800/60 rounded-3xl shadow-2xl p-6 md:p-8 overflow-y-auto max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-4 mb-6 gap-3">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-cyan-950/80 text-cyan-400 border border-cyan-500/40">
               <MapPin className="w-6 h-6" />
@@ -42,12 +44,28 @@ export const LevelMapModal: React.FC<LevelMapModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onRefreshChaptersToLevel1 && (
+              <button
+                onClick={() => {
+                  onRefreshChaptersToLevel1();
+                  onClose();
+                }}
+                title="Restart this realm from Chapter 1"
+                className="py-2 px-3 rounded-xl bg-slate-950 hover:bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 hover:text-white transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Refresh & Start Level 1</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Levels Grid / Path */}

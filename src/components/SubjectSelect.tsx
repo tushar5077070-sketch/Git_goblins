@@ -1,8 +1,9 @@
 import React from 'react';
 import { SubjectId, Character } from '../types';
 import { SUBJECTS, SubjectInfo } from '../data/subjects';
-import { Sparkles, ArrowRight, User, Volume2, VolumeX, Shield, CheckCircle2, BookOpen, Layers } from 'lucide-react';
+import { Sparkles, ArrowRight, User, Volume2, VolumeX, Shield, CheckCircle2, BookOpen, Layers, FileText, User as UserIcon } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
+import { useAuth } from '../context/AuthContext';
 
 interface SubjectSelectProps {
   character: Character;
@@ -19,6 +20,8 @@ interface SubjectSelectProps {
   onBackToLobby: () => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
+  onOpenProfile?: () => void;
+  onOpenPPT?: () => void;
 }
 
 export const SubjectSelect: React.FC<SubjectSelectProps> = ({
@@ -29,7 +32,11 @@ export const SubjectSelect: React.FC<SubjectSelectProps> = ({
   onBackToLobby,
   soundEnabled,
   onToggleSound,
+  onOpenProfile,
+  onOpenPPT,
 }) => {
+  const { user } = useAuth();
+
   return (
     <div className="relative min-h-full w-full bg-slate-950 text-slate-100 flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-black">
       {/* Background Ambience */}
@@ -40,7 +47,7 @@ export const SubjectSelect: React.FC<SubjectSelectProps> = ({
       </div>
 
       {/* Top Header */}
-      <header className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-cyan-900/30 bg-slate-950/70 backdrop-blur-md">
+      <header className="relative z-10 w-full px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between border-b border-cyan-900/30 bg-slate-950/70 backdrop-blur-md gap-3">
         <div className="flex items-center gap-3">
           <button
             onClick={onBackToLobby}
@@ -63,6 +70,28 @@ export const SubjectSelect: React.FC<SubjectSelectProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenPPT && (
+            <button
+              onClick={onOpenPPT}
+              title="Open Project Presentation Deck (PPT)"
+              className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-cyan-950 to-indigo-950 border border-cyan-500/40 text-cyan-300 hover:text-white transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer shadow-md"
+            >
+              <FileText className="w-4 h-4 text-cyan-400" />
+              <span className="hidden sm:inline">Project PPT</span>
+            </button>
+          )}
+
+          {onOpenProfile && (
+            <button
+              onClick={onOpenProfile}
+              title="Player Profile & Accounts"
+              className="py-1.5 px-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-500/50 text-cyan-300 hover:text-white transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer"
+            >
+              <UserIcon className="w-4 h-4 text-cyan-400" />
+              <span>{user?.name || 'Profile'}</span>
+            </button>
+          )}
+
           <button
             onClick={onToggleSound}
             title={soundEnabled ? 'Mute' : 'Unmute'}

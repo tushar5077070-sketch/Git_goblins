@@ -255,51 +255,26 @@ export const VillageCanvas: React.FC<VillageCanvasProps> = ({
         }
       });
 
-      // --- RESPONSIVE CANVAS SIZING & ZERO-BLACK-BORDER VIEWPORT ENGINE ---
-      const screenW = Math.max(window.innerWidth, canvas.parentElement?.clientWidth || 0, document.documentElement.clientWidth || 0);
-      const screenH = Math.max(window.innerHeight, canvas.parentElement?.clientHeight || 0, document.documentElement.clientHeight || 0);
+      // --- RENDERING CANVAS ---
+      const screenW = canvas.parentElement?.clientWidth || window.innerWidth;
+      const screenH = canvas.parentElement?.clientHeight || window.innerHeight;
       if (canvas.width !== screenW || canvas.height !== screenH) {
         canvas.width = screenW;
         canvas.height = screenH;
       }
 
-      // Responsive zoom scale:
-      // Using Math.max guarantees the canvas view covers the entire screen edge-to-edge with no black margins
-      const viewportScaleX = screenW / WORLD_WIDTH;
-      const viewportScaleY = screenH / WORLD_HEIGHT;
-      const scale = Math.max(viewportScaleX, viewportScaleY);
-      const visibleW = screenW / scale;
-      const visibleH = screenH / scale;
-
-      let cameraX = p.x - visibleW / 2;
-      let cameraY = p.y - visibleH / 2;
-
-      if (visibleW >= WORLD_WIDTH) {
-        cameraX = (WORLD_WIDTH - visibleW) / 2;
-      } else {
-        cameraX = Math.max(0, Math.min(WORLD_WIDTH - visibleW, cameraX));
-      }
-
-      if (visibleH >= WORLD_HEIGHT) {
-        cameraY = (WORLD_HEIGHT - visibleH) / 2;
-      } else {
-        cameraY = Math.max(0, Math.min(WORLD_HEIGHT - visibleH, cameraY));
-      }
-
-      // Outer ambient void backdrop matching level theme (fills entire physical screen)
-      ctx.fillStyle = level.theme.floorColor;
-      ctx.fillRect(0, 0, screenW, screenH);
+      let cameraX = p.x - screenW / 2;
+      let cameraY = p.y - screenH / 2;
+      cameraX = Math.max(0, Math.min(WORLD_WIDTH - screenW, cameraX));
+      cameraY = Math.max(0, Math.min(WORLD_HEIGHT - screenH, cameraY));
 
       ctx.save();
-      // Apply responsive scaling & camera offset
-      ctx.scale(scale, scale);
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, screenW, screenH);
       ctx.translate(-cameraX, -cameraY);
 
-      // Extended terrain underlay to eliminate any boundary gaps across any resolution
-      ctx.fillStyle = level.theme.floorColor;
-      ctx.fillRect(-6000, -6000, WORLD_WIDTH + 12000, WORLD_HEIGHT + 12000);
-
       // 1. Village Ground & Environment by mapType
+      ctx.fillStyle = level.theme.floorColor;
       ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
       if (level.mapType === 'courtyard') {
@@ -1174,7 +1149,7 @@ export const VillageCanvas: React.FC<VillageCanvasProps> = ({
 
       // Atmospheric Fog
       ctx.fillStyle = level.theme.fogColor;
-      ctx.fillRect(-2000, -2000, WORLD_WIDTH + 4000, WORLD_HEIGHT + 4000);
+      ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
       ctx.restore();
 

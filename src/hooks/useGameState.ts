@@ -468,6 +468,34 @@ export function useGameState() {
     setState((prev) => ({ ...prev, hasSeen100Cinematic: true }));
   }, []);
 
+  const refreshChaptersToLevel1 = useCallback((targetSubjectId?: SubjectId) => {
+    setState((prev) => {
+      const activeSub = targetSubjectId || prev.selectedSubjectId;
+      const updatedSubjectProgress = {
+        ...prev.subjectProgress,
+        [activeSub]: {
+          currentLevelId: 1,
+          unlockedLevelIds: [1],
+          completedLevelIds: [],
+          learnedLessonLevelIds: [],
+        },
+      };
+
+      return {
+        ...prev,
+        selectedSubjectId: activeSub,
+        currentLevelId: 1,
+        unlockedLevelIds: [1],
+        completedLevelIds: [],
+        learnedLessonLevelIds: [],
+        currentLevelCorrectAnswers: 0,
+        subjectProgress: updatedSubjectProgress,
+        screen: 'exploration',
+      };
+    });
+    soundEngine.playLevelVictory();
+  }, []);
+
   const resetAllProgress = useCallback(() => {
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -517,6 +545,7 @@ export function useGameState() {
     restartCurrentLevel,
     advanceToNextLevel,
     goToLevel,
+    refreshChaptersToLevel1,
     setScreen,
     discoverClue,
     collectShard,

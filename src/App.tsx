@@ -19,6 +19,9 @@ import { TrialsArenaModal } from './components/TrialsArenaModal';
 import { AchievementsModal } from './components/AchievementsModal';
 import { CodexModal } from './components/CodexModal';
 import { GrandCinematicModal } from './components/GrandCinematicModal';
+import { ProfileModal } from './components/ProfileModal';
+import { ProjectPresentationModal } from './components/ProjectPresentationModal';
+import { AuthModal } from './components/AuthModal';
 
 export default function App() {
   const {
@@ -39,6 +42,7 @@ export default function App() {
     restartCurrentLevel,
     advanceToNextLevel,
     goToLevel,
+    refreshChaptersToLevel1,
     setScreen,
     discoverClue,
     collectShard,
@@ -54,6 +58,10 @@ export default function App() {
   const [showAchievements, setShowAchievements] = useState(false);
   const [showCodex, setShowCodex] = useState(false);
   const [showGrand100, setShowGrand100] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [showPPT, setShowPPT] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authDefaultTab, setAuthDefaultTab] = useState<'login' | 'signup'>('login');
 
   // Active hero and active level based on active subject
   const allCharacters = [...CHARACTERS, ...state.customCharacters];
@@ -80,7 +88,7 @@ export default function App() {
   };
 
   return (
-    <div id="crystal-app-root" className="fixed inset-0 w-screen h-screen w-full h-full overflow-hidden bg-slate-950 font-['Outfit'] select-none">
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 font-['Outfit'] select-none">
       {/* 1. Character Selection & Creation Lobby */}
       {state.screen === 'character_select' && (
         <div className="w-full h-full overflow-y-auto overflow-x-hidden">
@@ -95,6 +103,12 @@ export default function App() {
             onToggleSound={toggleSound}
             onReset={resetAllProgress}
             hasExistingSave={state.completedLevelIds.length > 0 || state.totalCorrectAnswers > 0}
+            onOpenProfile={() => setShowProfile(true)}
+            onOpenPPT={() => setShowPPT(true)}
+            onOpenAuth={() => {
+              setAuthDefaultTab('login');
+              setShowAuth(true);
+            }}
           />
         </div>
       )}
@@ -112,6 +126,8 @@ export default function App() {
             onBackToLobby={() => setScreen('character_select')}
             soundEnabled={state.soundEnabled}
             onToggleSound={toggleSound}
+            onOpenProfile={() => setShowProfile(true)}
+            onOpenPPT={() => setShowPPT(true)}
           />
         </div>
       )}
@@ -159,6 +175,9 @@ export default function App() {
             onOpenTrials={() => setShowTrials(true)}
             onOpenAchievements={() => setShowAchievements(true)}
             onOpenCodex={() => setShowCodex(true)}
+            onOpenProfile={() => setShowProfile(true)}
+            onOpenPPT={() => setShowPPT(true)}
+            onRefreshChaptersToLevel1={() => refreshChaptersToLevel1(state.selectedSubjectId)}
             onSwitchCharacter={() => setScreen('character_select')}
             onSwitchSubject={() => setScreen('subject_select')}
           />
@@ -224,6 +243,11 @@ export default function App() {
             setShowMap(false);
             setScreen('exploration');
           }}
+          onRefreshChaptersToLevel1={() => {
+            refreshChaptersToLevel1(state.selectedSubjectId);
+            setShowMap(false);
+            setScreen('exploration');
+          }}
           onClose={() => {
             setShowMap(false);
             if (state.screen === 'level_map') {
@@ -273,6 +297,50 @@ export default function App() {
           character={currentCharacter}
           totalCorrectAnswers={state.totalCorrectAnswers}
           onClose={() => setShowGrand100(false)}
+        />
+      )}
+
+      {/* User Account & Achievements Profile Modal */}
+      {showProfile && (
+        <ProfileModal
+          gameState={state}
+          onClose={() => setShowProfile(false)}
+          onRefreshChaptersToLevel1={(subjectId) => {
+            refreshChaptersToLevel1(subjectId);
+            setScreen('exploration');
+          }}
+          onOpenPPT={() => {
+            setShowProfile(false);
+            setShowPPT(true);
+          }}
+          onOpenAchievements={() => {
+            setShowProfile(false);
+            setShowAchievements(true);
+          }}
+          onOpenAuth={() => {
+            setShowProfile(false);
+            setAuthDefaultTab('login');
+            setShowAuth(true);
+          }}
+        />
+      )}
+
+      {/* Project Presentation PPT Deck Modal */}
+      {showPPT && (
+        <ProjectPresentationModal
+          onClose={() => setShowPPT(false)}
+          onStartPlaying={() => {
+            refreshChaptersToLevel1(state.selectedSubjectId);
+            setScreen('exploration');
+          }}
+        />
+      )}
+
+      {/* Sign In & Sign Up Authentication Modal */}
+      {showAuth && (
+        <AuthModal
+          defaultTab={authDefaultTab}
+          onClose={() => setShowAuth(false)}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Character, Monster, LevelData, Question } from '../types';
 import { soundEngine } from '../utils/audio';
 import confetti from 'canvas-confetti';
@@ -12,7 +12,7 @@ import {
   RotateCcw,
   BookOpen,
   ArrowRight,
-  RefreshCw,
+  GitBranch,
 } from 'lucide-react';
 
 interface BattleArenaProps {
@@ -24,23 +24,6 @@ interface BattleArenaProps {
   onWinLevel: () => void;
   onRestartLevel: () => void;
   onReviewLesson: () => void;
-}
-
-// Randomly permute options so correct answer position changes on each retry
-function prepareQuestion(q: Question): Question {
-  const originalCorrect = q.options[q.correctIndex];
-  const indices = [0, 1, 2, 3].slice(0, q.options.length);
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-  const shuffledOptions = indices.map((idx) => q.options[idx]);
-  const newCorrectIndex = shuffledOptions.indexOf(originalCorrect);
-  return {
-    ...q,
-    options: shuffledOptions,
-    correctIndex: newCorrectIndex,
-  };
 }
 
 export const BattleArena: React.FC<BattleArenaProps> = ({
@@ -55,55 +38,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Track asked question IDs and immediate previous attempt to guarantee non-repeating retakes
-  const askedQuestionIdsRef = useRef<string[]>([]);
-  const previousAttemptQuestionIdsRef = useRef<string[]>([]);
-
-  // Function to pick 2 unasked questions from this topic's pool
-  const pickBattleQuestions = useCallback(
-    (excludeIds: string[] = []): Question[] => {
-      const pool = level.questions;
-      const mustExclude = new Set([...excludeIds, ...previousAttemptQuestionIdsRef.current]);
-
-      // Priority 1: Questions not asked yet in this session, and NOT in immediate previous attempt
-      let candidates = pool.filter(
-        (q) => !askedQuestionIdsRef.current.includes(q.id) && !mustExclude.has(q.id)
-      );
-
-      // Priority 2: If pool of unasked questions has run low, cycle the pool while STILL strictly excluding immediate previous attempt
-      if (candidates.length < 2) {
-        askedQuestionIdsRef.current = [];
-        candidates = pool.filter((q) => !mustExclude.has(q.id));
-      }
-
-      // Priority 3: Fallback only if pool has fewer than 2 questions total
-      if (candidates.length < 2) {
-        candidates = pool.filter((q) => !excludeIds.includes(q.id));
-        if (candidates.length < 2) {
-          candidates = [...pool];
-        }
-      }
-
-      // Randomize selection from eligible unasked questions
-      const shuffled = [...candidates].sort(() => Math.random() - 0.5);
-      const selected = shuffled.slice(0, 2);
-
-      // Remember these questions as the previous attempt so retake never repeats them
-      previousAttemptQuestionIdsRef.current = selected.map((q) => q.id);
-      selected.forEach((q) => {
-        if (!askedQuestionIdsRef.current.includes(q.id)) {
-          askedQuestionIdsRef.current.push(q.id);
-        }
-      });
-
-      return selected.map(prepareQuestion);
-    },
-    [level.questions]
-  );
-
-  const [battleQuestions, setBattleQuestions] = useState<Question[]>(() =>
-    pickBattleQuestions()
-  );
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -113,45 +47,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   } | null>(null);
 
   const [battleCorrectCount, setBattleCorrectCount] = useState(0);
-  const [battleStage, setBattleStage] = useState<
-    'question' | 'victory_cinematic' | 'defeat_gameover'
-  >('question');
+  const [battleStage, setBattleStage] = useState<'question' | 'victory_cinematic' | 'defeat_gameover'>('question');
   const [screenShake, setScreenShake] = useState(false);
 
-  // Current active challenge question
-  const currentQuestion: Question =
-    battleQuestions[questionIndex] || battleQuestions[0];
-
-  // Refresh questions whenever level changes
-  useEffect(() => {
-    askedQuestionIdsRef.current = [];
-    const fresh = pickBattleQuestions();
-    setBattleQuestions(fresh);
-    setQuestionIndex(0);
-    setSelectedOption(null);
-    setIsEvaluating(false);
-    setFeedback(null);
-    setBattleCorrectCount(0);
-    setBattleStage('question');
-  }, [level.id, pickBattleQuestions]);
+  const currentQuestion: Question = level.questions[questionIndex];
 
   // Battle Animation Canvas
   const animRef = useRef<{
-    projectile: {
-      x: number;
-      y: number;
-      active: boolean;
-      targetX: number;
-      targetY: number;
-    } | null;
-    impactParticles: {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      color: string;
-      life: number;
-    }[];
+    projectile: { x: number; y: number; active: boolean; targetX: number; targetY: number } | null;
+    impactParticles: { x: number; y: number; vx: number; vy: number; color: string; life: number }[];
     monsterShieldActive: boolean;
     monsterDissolving: boolean;
     monsterDissolveAlpha: number;
@@ -162,27 +66,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     monsterDissolving: false,
     monsterDissolveAlpha: 1.0,
   });
-
-  // Retake attack with completely fresh unrepeated questions
-  const handleRetakeBattle = useCallback(() => {
-    soundEngine.playFootstep();
-    const currentIds = battleQuestions.map((q) => q.id);
-    const freshQuestions = pickBattleQuestions(currentIds);
-
-    setBattleQuestions(freshQuestions);
-    setQuestionIndex(0);
-    setSelectedOption(null);
-    setIsEvaluating(false);
-    setFeedback(null);
-    setBattleCorrectCount(0);
-    setBattleStage('question');
-
-    animRef.current.monsterDissolving = false;
-    animRef.current.monsterDissolveAlpha = 1.0;
-    animRef.current.monsterShieldActive = false;
-    animRef.current.projectile = null;
-    animRef.current.impactParticles = [];
-  }, [battleQuestions, pickBattleQuestions]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -195,28 +78,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     const render = () => {
       time += 0.04;
-
-      // Adaptively scale canvas width to match parent container for crisp fullscreen visuals
-      if (canvas.parentElement) {
-        const parentW = canvas.parentElement.clientWidth;
-        if (canvas.width !== parentW) {
-          canvas.width = parentW;
-        }
-      }
-
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
       // Arena Floor & Arcane Battle Ground
-      const arenaGrad = ctx.createRadialGradient(
-        w / 2,
-        h * 0.7,
-        50,
-        w / 2,
-        h * 0.7,
-        w * 0.6
-      );
+      const arenaGrad = ctx.createRadialGradient(w / 2, h * 0.7, 50, w / 2, h * 0.7, w * 0.6);
       arenaGrad.addColorStop(0, 'rgba(15, 23, 42, 0.9)');
       arenaGrad.addColorStop(1, 'rgba(2, 6, 23, 0.95)');
       ctx.fillStyle = arenaGrad;
@@ -273,14 +140,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         }
 
         // Monster Menacing Red/Purple Glitch Aura
-        const mAura = ctx.createRadialGradient(
-          monsterX,
-          monsterY - 30,
-          10,
-          monsterX,
-          monsterY - 30,
-          75
-        );
+        const mAura = ctx.createRadialGradient(monsterX, monsterY - 30, 10, monsterX, monsterY - 30, 75);
         mAura.addColorStop(0, `${monster.themeColor}99`);
         mAura.addColorStop(1, 'transparent');
         ctx.fillStyle = mAura;
@@ -295,13 +155,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           ctx.shadowColor = '#ef4444';
           ctx.shadowBlur = 20;
           ctx.beginPath();
-          ctx.arc(
-            monsterX - 15,
-            monsterY - 35,
-            65,
-            Math.PI * 0.5,
-            Math.PI * 1.5
-          );
+          ctx.arc(monsterX - 15, monsterY - 35, 65, Math.PI * 0.5, Math.PI * 1.5);
           ctx.stroke();
           ctx.shadowBlur = 0;
         }
@@ -343,7 +197,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         ctx.restore();
       }
 
-      // --- PROJECTILE ANIMATION (Player Attack Spell) ---
+      // --- PROJECTILE ANIMATION (Player Git Command Spell) ---
       if (anim.projectile && anim.projectile.active) {
         const proj = anim.projectile;
         const dx = proj.targetX - proj.x;
@@ -429,7 +283,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         targetY: h * 0.65,
       };
 
-      // Rapid impact and INSTANT question switch
+      // Rapid 300ms impact and INSTANT question switch without requiring any keypress
       setTimeout(() => {
         soundEngine.playImpactSuccess();
         setScreenShake(true);
@@ -502,35 +356,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             <Swords className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-red-400">
-                {level.master.gitDiscipline} Combat • Chapter {level.id}
-              </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-400 hidden sm:inline">
-                Dynamic Topic Pool
-              </span>
-            </div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-red-400">
+              {level.master.gitDiscipline} Combat • Chapter {level.id}
+            </span>
             <h3 className="text-base font-bold font-['Cinzel'] text-white">
               {character.name} vs {monster.name}
             </h3>
           </div>
         </div>
 
-        {/* Battle Score Tracker & Retake Question Shuffler */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          {/* Quick Retake / Fresh Question Button */}
-          <button
-            onClick={handleRetakeBattle}
-            title="Retake attack with fresh, unrepeated questions on this topic"
-            className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-cyan-300 transition-colors flex items-center gap-1.5 cursor-pointer text-xs font-mono"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden md:inline">Change Questions</span>
-          </button>
-
+        {/* Battle Score Tracker (Req: 2/2) */}
+        <div className="flex items-center gap-6">
           <div className="text-right">
             <span className="text-[10px] font-mono uppercase text-slate-400 block">
-              Accuracy (Req: 2/2)
+              Combat Accuracy (Req: 2/2)
             </span>
             <div className="flex items-center gap-1.5 justify-end">
               <span
@@ -557,9 +396,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             </div>
           </div>
 
-          <div className="border-l border-slate-800 pl-4 text-right hidden sm:block">
+          <div className="border-l border-slate-800 pl-4 text-right">
             <span className="text-[10px] font-mono uppercase text-slate-400 block">
-              Knowledge Score
+              Global Knowledge Score
             </span>
             <span className="text-sm font-mono font-bold text-cyan-300">
               {totalCorrectAnswers} Correct
@@ -595,8 +434,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               Monster Banished! The path to the next mystery is now open.
             </h2>
             <p className="text-sm md:text-base text-emerald-200 max-w-2xl mx-auto font-['Outfit']">
-              {monster.defeatQuote} Your precise answers neutralized the
-              corrupted entity and unsealed the path!
+              {monster.defeatQuote} Your precise answers neutralized the corrupted entity and unsealed the path!
             </p>
 
             <div className="pt-4 flex items-center justify-center gap-4">
@@ -618,24 +456,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               Glitch Overwhelms You: {monster.name} Resists
             </h2>
             <p className="text-sm text-slate-300 max-w-xl mx-auto">
-              You scored{' '}
-              <strong className="text-amber-400">
-                {battleCorrectCount} of 2
-              </strong>{' '}
-              required correct answers. Both questions must be answered correctly
-              to eliminate the glitch and unseal the path! Retake the attack to
-              face fresh questions on this topic.
+              You scored <strong className="text-amber-400">{battleCorrectCount} of 2</strong> required correct answers. Both questions must be answered correctly to eliminate the glitch and unseal the path!
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={handleRetakeBattle}
-                className="w-full sm:w-auto py-3.5 px-8 rounded-xl font-bold font-['Cinzel'] text-sm uppercase tracking-wider text-slate-950 bg-gradient-to-r from-red-400 via-rose-400 to-amber-400 hover:from-red-300 hover:to-amber-300 shadow-xl shadow-red-500/30 flex items-center justify-center gap-2 cursor-pointer transition-transform hover:scale-105 active:scale-95"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Retake Attack (New Questions)</span>
-              </button>
-
               <button
                 onClick={onReviewLesson}
                 className="w-full sm:w-auto py-3 px-6 rounded-xl font-mono text-xs uppercase tracking-wider text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-800/60 flex items-center justify-center gap-2 cursor-pointer transition-colors"
@@ -645,27 +469,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               </button>
 
               <button
-                onClick={() => {
-                  handleRetakeBattle();
-                  onRestartLevel();
-                }}
-                className="w-full sm:w-auto py-3 px-6 rounded-xl font-mono text-xs uppercase tracking-wider text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                onClick={onRestartLevel}
+                className="w-full sm:w-auto py-3 px-8 rounded-xl font-bold font-['Cinzel'] text-sm uppercase tracking-wider text-slate-950 bg-gradient-to-r from-red-400 to-amber-500 hover:from-red-300 hover:to-amber-400 shadow-lg shadow-red-500/30 flex items-center justify-center gap-2 cursor-pointer transition-transform hover:scale-105 active:scale-95"
               >
-                <span>Return to Village</span>
+                <RotateCcw className="w-4 h-4" />
+                <span>Restart Level & Retry</span>
               </button>
             </div>
           </div>
         ) : (
           <div className="p-5 md:p-6 rounded-2xl bg-slate-900/90 border border-cyan-900/50 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">
-                  Challenge Question {questionIndex + 1} of 2
-                </span>
-                <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">
-                  • Non-repeating retake pool
-                </span>
-              </div>
+              <span className="text-xs font-mono uppercase tracking-widest text-cyan-400">
+                Challenge Question {questionIndex + 1} of 2
+              </span>
               <span className="text-xs font-mono text-slate-400">
                 Target: {monster.name}
               </span>
@@ -679,19 +496,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               {currentQuestion.options.map((option, idx) => {
                 const isSelected = selectedOption === idx;
                 const isCorrect = idx === currentQuestion.correctIndex;
-                let btnStyle =
-                  'border-slate-800 bg-slate-950/70 hover:border-cyan-500/60 hover:bg-slate-900 text-slate-200';
+                let btnStyle = 'border-slate-800 bg-slate-950/70 hover:border-cyan-500/60 hover:bg-slate-900 text-slate-200';
 
                 if (feedback !== null) {
                   if (isCorrect) {
-                    btnStyle =
-                      'border-emerald-500 bg-emerald-950/60 text-emerald-200 ring-2 ring-emerald-500/40';
+                    btnStyle = 'border-emerald-500 bg-emerald-950/60 text-emerald-200 ring-2 ring-emerald-500/40';
                   } else if (isSelected) {
-                    btnStyle =
-                      'border-red-500 bg-red-950/60 text-red-200 ring-2 ring-red-500/40';
+                    btnStyle = 'border-red-500 bg-red-950/60 text-red-200 ring-2 ring-red-500/40';
                   } else {
-                    btnStyle =
-                      'opacity-40 border-slate-800 bg-slate-950 text-slate-500';
+                    btnStyle = 'opacity-40 border-slate-800 bg-slate-950 text-slate-500';
                   }
                 }
 
@@ -728,13 +541,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   <div className="space-y-0.5">
                     <span
                       className="text-xs font-mono font-bold uppercase tracking-wider"
-                      style={{
-                        color: feedback.correct ? '#34d399' : '#fbbf24',
-                      }}
+                      style={{ color: feedback.correct ? '#34d399' : '#fbbf24' }}
                     >
-                      {feedback.correct
-                        ? 'Spell Strikes Monster!'
-                        : 'Monster Deflects Strike!'}
+                      {feedback.correct ? 'Spell Strikes Monster!' : 'Monster Deflects Strike!'}
                     </span>
                     <p className="text-xs text-slate-200 leading-relaxed font-['Outfit']">
                       {feedback.explanation}

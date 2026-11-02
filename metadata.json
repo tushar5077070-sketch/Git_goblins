@@ -1,8 +1,6 @@
 {
-  "name": "Remix The Crystal Village - Educational Adventure Game",
+  "name": "The Crystal Village - Educational Adventure Game",
   "description": "An immersive story-driven educational adventure game set in a mysterious glowing crystal village. Explore ancient ruins, learn from the Crystal Masters through interactive video lessons, and test your knowledge in magical elemental battles.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
